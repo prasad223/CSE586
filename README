@@ -1,0 +1,12 @@
+This directory contains simple scripts that students can use which can help in
+debugging. First version has 2 simple scripts and 1 configuration script. 
+
+environment.py - contains variables that has to be populated accroding to the
+setup
+
+display_db.py - this will pull the database from all 5 avds and display the
+contents on the terminal. sqlite3 has to be installed on the host machine
+
+fresh_install.py - this script will uninstall any previously installed package,
+reinstall it, unlock the screen and lauch the main activity from where the app
+can be tested. This script does it for all 5 AVDs.
