@@ -16,6 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.apache.http.impl.io.ContentLengthInputStream;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,7 +28,9 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -145,6 +149,8 @@ public class GroupMessengerActivity extends Activity {
         return uriBuilder.build();
     }
 
+    private int getIndexForPort(int portNum){ return (portNum - REMOTE_PORTS[0])/4;  }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,10 +159,6 @@ public class GroupMessengerActivity extends Activity {
         TextView tv = (TextView) findViewById(R.id.textView1);
         tv.setMovementMethod(new ScrollingMovementMethod());
 
-        /*
-         * Registers OnPTestClickListener for "button1" in the layout, which is the "PTest" button.
-         * OnPTestClickListener demonstrates how to access a ContentProvider.
-         */
         findViewById(R.id.button1).setOnClickListener(
                 new OnPTestClickListener(tv, getContentResolver()));
 
@@ -181,23 +183,16 @@ public class GroupMessengerActivity extends Activity {
                 String msg = editText.getText().toString() + "\n";
                 editText.setText("");
                 for(int port: REMOTE_PORTS){
-                    new ClientTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,new WrapperMsg(new Message(msg,myPort),port));
+                    sendMessage(new WrapperMsg(new Message(msg,myPort),port));
                 }
             }
         });
     }
 
+    private synchronized void sendMessage(WrapperMsg wmsg){
+        new ClientTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR,wmsg);
+    }
 
-    /***
-     * ServerTask is an AsyncTask that should handle incoming messages. It is created by
-     * ServerTask.executeOnExecutor() call in SimpleMessengerActivity.
-     *
-     * Please make sure you understand how AsyncTask works by reading
-     * http://developer.android.com/reference/android/os/AsyncTask.html
-     *
-     * @author stevko
-     *
-     */
     private class ServerTask extends AsyncTask<ServerSocket, String, Void> {
 
         @Override
@@ -207,12 +202,70 @@ public class GroupMessengerActivity extends Activity {
                 try {
                     Socket socket =  serverSocket.accept();
                     ObjectInputStream input  = new ObjectInputStream(socket.getInputStream());
-                    Object msg = input.readObject();
-                    Log.i(TAG,"msfg rec: " + msg);
-                    contentValues.put(KEY_FIELD,String.valueOf(messageCounter.getAndIncrement()));
-                    contentValues.put(VALUE_FIELD, ((Message)msg).toString());
-                    contentResolver.insert(uri, contentValues);
-                    publishProgress(msg.toString());
+                    Object o = input.readObject();
+                    if(o == null || !(o instanceof Message)){
+                        input.close();
+                        socket.close();
+                        return null;
+                    }
+                    Message msg = (Message) o;
+                    Log.i(TAG, "msfg rec: " + msg);
+                    input.close();
+                    socket.close();
+
+
+                    if(msg.isDeliverable){
+                        Log.i(TAG, "msg is deliverable ");
+                        if(priorityBlockingQueue.contains(msg)){
+                            priorityBlockingQueue.remove(msg);
+                        }
+                        priorityBlockingQueue.add(msg);
+                        while(!priorityBlockingQueue.isEmpty() && priorityBlockingQueue.peek().isDeliverable){
+                            Log.i(TAG,"Deliverable msg on Q: " + priorityBlockingQueue.peek());
+                            contentValues.put(String.valueOf(messageCounter.getAndIncrement()),priorityBlockingQueue.poll().message);
+                        }
+                        publishProgress(msg.toString());
+                        return null;
+                    }
+                    int portIndex = getIndexForPort(myPort);
+                    Log.i(TAG,"portIndex: " + portIndex + " for port: " + myPort);
+                    if(msg.proposals[portIndex] == Integer.MAX_VALUE){
+                        msg.proposals[portIndex] = sequenceNumber.incrementAndGet();
+                    }
+                    Log.i(TAG,"update: " + msg);
+                    if(msg.senderId == myPort){
+                        Log.i(TAG,"my own msg");
+                        if(priorityBlockingQueue.contains(msg)){
+                            Log.i(TAG,"msg already presnet");
+                            ArrayList<Message> temp = new ArrayList<Message>();
+                            priorityBlockingQueue.drainTo(temp);
+                            Log.i(TAG, "PBQ: " + temp);
+                            Message qMsg = temp.remove(temp.indexOf(msg));
+                            Log.i(TAG,"qMsg: " + qMsg);
+                            for(int i=0;i<msg.proposals.length;i++){
+                                msg.proposals[i] = Math.min(msg.proposals[i],qMsg.proposals[i]);
+                            }
+                            temp.add(msg);
+                            priorityBlockingQueue.addAll(temp);
+                            Log.i(TAG,"Q_update: " + priorityBlockingQueue);
+                            msg.computeSequence();
+                            if(msg.isDeliverable){
+                                for (int port : REMOTE_PORTS){
+                                    sendMessage(new WrapperMsg(msg,port));
+                                }
+                            } else{
+                                sendMessage(new WrapperMsg(msg,msg.senderId));
+                            }
+                        }else{
+                            Log.i(TAG, "new msg");
+                            msg.computeSequence();
+                            priorityBlockingQueue.add(msg);
+                        }
+                    }else{
+                        Log.i(TAG,"sending proposal");
+                        sendMessage(new WrapperMsg(msg, msg.senderId));
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -220,31 +273,13 @@ public class GroupMessengerActivity extends Activity {
         }
 
         protected void onProgressUpdate(String...strings) {
-            /*
-             * The following code displays what is received in doInBackground().
-             */
             String strReceived = strings[0].trim();
             TextView textView = (TextView) findViewById(R.id.textView1);
             textView.append(strReceived + "\n");
-
-            /*
-             * The following code creates a file in the AVD's internal storage and stores a file.
-             *
-             * For more information on file I/O on Android, please take a look at
-             * http://developer.android.com/training/basics/data-storage/files.html
-             */
             return;
         }
     }
 
-    /***
-     * ClientTask is an AsyncTask that should send a string over the network.
-     * It is created by ClientTask.executeOnExecutor() call whenever OnKeyListener.onKey() detects
-     * an enter key press event.
-     *
-     * @author stevko
-     *
-     */
     private class ClientTask extends AsyncTask<WrapperMsg, Void, Void> {
 
         @Override
@@ -261,10 +296,18 @@ public class GroupMessengerActivity extends Activity {
                     out.flush();
                     out.close();
                     socket.close();
-                } catch (UnknownHostException e) {
-                    Log.e(TAG, "ClientTask UnknownHostException");
-                } catch (IOException e) {
-                    Log.e(TAG, "ClientTask socket IOException");
+                }catch(SocketTimeoutException e){
+                    Log.e(TAG, "Socket Timeout Exception");
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }catch (IOException e) {
+                    Log.e(TAG, "Socket IO Exception");
+                    //Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                }catch (Exception e){
+                    Log.e(TAG,"Gen exception");
+                    Log.e(TAG,e.getMessage());
+                    e.printStackTrace();
                 }
             return null;
         }
@@ -277,3 +320,4 @@ public class GroupMessengerActivity extends Activity {
         return true;
     }
 }
+
