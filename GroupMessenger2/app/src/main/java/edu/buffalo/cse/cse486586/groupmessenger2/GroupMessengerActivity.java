@@ -46,58 +46,15 @@ public class GroupMessengerActivity extends Activity {
     private static final String VALUE_FIELD = "value";
     static final int[] REMOTE_PORTS = {11108, 11112, 11116, 11120, 11124};
     static final int SERVER_PORT = 10000;
-    private ContentResolver contentResolver;
     private final Uri uri = buildUri("content", "edu.buffalo.cse.cse486586.groupmessenger2.provider");
     private static ContentValues contentValues = new ContentValues();
-    private static Map<Message,HashSet<Proposal>> messageListMap = new HashMap<Message, HashSet<Proposal>>();
+    private static Map<Integer,HashMap<Integer,Integer>> messageListMap = new HashMap<Integer,HashMap<Integer,Integer>>();
     static int myPort;
     AtomicInteger messageCounter = new AtomicInteger(0);
     int proposedSequenceNumber = -1;
     int currentAgreedSequenceNumber = -1;
     static PriorityBlockingQueue<Message> priorityBlockingQueue = new PriorityBlockingQueue<Message>();
     static AtomicInteger messageIdCounter = new AtomicInteger(0);
-
-
-    class Proposal implements Comparable{
-        int proposerId;
-        int proposalValue;
-
-        @Override
-        public int compareTo(Object another) {
-            if(another == null || !(another instanceof Proposal)){
-                return -1;
-            }
-            Proposal other =(Proposal)another;
-            if(this.proposalValue == other.proposalValue){
-                return Integer.compare(this.proposerId,other.proposerId);
-            }
-            return Integer.compare(this.proposalValue, other.proposalValue);
-        }
-
-        @Override
-        public String toString() {
-            return  "pId=" + proposerId +
-                    ", pVal=" + proposalValue +
-                    '}';
-        }
-
-        @Override
-        public int hashCode() {
-            return proposerId;
-        }
-
-        Proposal(int proposerId,int proposalValue){
-            this.proposalValue = proposalValue;
-            this.proposerId = proposerId;
-        }
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Proposal)) return false;
-            Proposal proposal = (Proposal) o;
-            return proposerId == proposal.proposerId;
-        }
-    }
 
     /**
      * buildUri() demonstrates how to build a URI for a ContentProvider.
@@ -124,7 +81,6 @@ public class GroupMessengerActivity extends Activity {
         findViewById(R.id.button1).setOnClickListener(
                 new OnPTestClickListener(tv, getContentResolver()));
 
-        contentResolver = getContentResolver();
         TelephonyManager tel = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
         String portStr = tel.getLine1Number().substring(tel.getLine1Number().length() - 4);
         myPort = Integer.parseInt(portStr)*2;
@@ -134,7 +90,7 @@ public class GroupMessengerActivity extends Activity {
             ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
             new ServerTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, serverSocket);
         } catch (IOException e) {
-            Log.e(TAG, "Can't create a ServerSocket");
+            Log.e(TAG, "Can't create a ServerSocket: ", e );
             return;
         }
         Button sendButton = (Button) findViewById(R.id.button4);
@@ -145,71 +101,40 @@ public class GroupMessengerActivity extends Activity {
                 String msg = editText.getText().toString();// + "\n";
                 editText.setText("");
                 Message message = new Message(msg, myPort, messageIdCounter.incrementAndGet());
-                messageListMap.put(message, new HashSet<Proposal>());
+                messageListMap.put(message.messageId, new HashMap<Integer,Integer>());
                 Log.i(TAG, "Generated New Message: " + message);
-                multicastMessage(message);
+                new ClientTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, message);
             }
         });
     }
 
-    private synchronized void multicastMessage(Message msg){
-        new ClientTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR,msg);
-    }
-
-    private synchronized void unicastMessage(Message msg){
-        new ProposalSender().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR,msg);
-    }
-
-    private class ProposalSender extends AsyncTask<Message, Void, Void>{
+    private class ServerTask extends AsyncTask<ServerSocket, Message, Void> {
 
         @Override
-        protected Void doInBackground(Message... msgs){
-            try{
-                Message msg = msgs[0];
-                Socket socket = new Socket(InetAddress.getByAddress(new byte[]{10,0,2,2}),msg.senderId);
-                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-                out.writeObject(msg);
-                out.flush();
-                out.close();
-                socket.close();
-            }catch(Exception e){
-            }
-            return null;
-        }
-    }
-
-    private class ServerTask extends AsyncTask<ServerSocket, String, Void> {
-
-        @Override
-        protected synchronized Void doInBackground(ServerSocket... sockets) {
+        protected Void doInBackground(ServerSocket... sockets) {
             ServerSocket serverSocket = sockets[0];
+
+            int i = 0;
             while(true){
                 try {
+                    Log.i(TAG, "Waiting for new connection " + ++i);
                     Socket socket =  serverSocket.accept();
                     ObjectInputStream input  = new ObjectInputStream(socket.getInputStream());
-                    Object o = input.readObject();
-                    if(o == null || !(o instanceof Message)){
-                        input.close();
-                        socket.close();
-                        continue;
-                    }
-                    Message msgRecieved = (Message) o;
+                    Message msgRecieved = (Message) input.readObject();
                     Log.i(TAG, "SERVER: msg rec: " + msgRecieved);
                     input.close();
                     socket.close();
                     switch (msgRecieved.messageType){
                         case NewMessage:
-                            Log.i(TAG, "NM: " + msgRecieved);
-                            Log.i(TAG, "NM: " +"curr Q: " + priorityBlockingQueue);
+                            //Log.i(TAG, "NM: " + msgRecieved);
+                            //Log.i(TAG, "NM: " +"curr Q: " + priorityBlockingQueue);
                             proposedSequenceNumber = Math.max(proposedSequenceNumber,currentAgreedSequenceNumber)+1;
+                            //msgRecieved.proposerId = myPort;
                             msgRecieved.sequenceNumber = proposedSequenceNumber;
-                            if(priorityBlockingQueue.contains(msgRecieved)){
-                                priorityBlockingQueue.remove(msgRecieved);
-                            }
-                            priorityBlockingQueue.add(msgRecieved);
                             msgRecieved.messageType = MessageType.Proposal;
+                            priorityBlockingQueue.add(msgRecieved);
                             Log.i(TAG, "NM: pSeqNum: " + proposedSequenceNumber + ", Sending proposal: " + msgRecieved);
-                            unicastMessage(msgRecieved);
+                            publishProgress(msgRecieved);
                             break;
                         case Agreement:
                             //Log.i(TAG,"AG: " + msgRecieved);
@@ -221,35 +146,36 @@ public class GroupMessengerActivity extends Activity {
                             currentAgreedSequenceNumber = Math.max(currentAgreedSequenceNumber,msgRecieved.sequenceNumber);
                             Log.i(TAG,"AG: curAgreedSeqNum: " + currentAgreedSequenceNumber+ " msgReceived: " + msgRecieved);
                             Log.i(TAG,"AG: " + "curr Q: after new msg: " + priorityBlockingQueue);
-                            while(!priorityBlockingQueue.isEmpty()){
-                                Message queueTop = priorityBlockingQueue.peek();
-                                if(queueTop.messageType == MessageType.Agreement && queueTop.proposerId != Integer.MAX_VALUE){
+                            while(!priorityBlockingQueue.isEmpty() && priorityBlockingQueue.peek().messageType == MessageType.Agreement){
                                     Log.i(TAG,"AG: " +"Deliverable msg on Q: " + priorityBlockingQueue.peek());
                                     contentValues.put(KEY_FIELD, String.valueOf(messageCounter.getAndIncrement()));
                                     contentValues.put(VALUE_FIELD, priorityBlockingQueue.poll().message);
                                     Log.i(TAG,"AG: " + "Inserting : " + contentValues);
-                                    contentResolver.insert(uri,contentValues);
-                                }
+                                    getContentResolver().insert(uri,contentValues);
                             }
-                            publishProgress(msgRecieved.toString());
+
                             break;
                         case Proposal:
                             Log.i(TAG,"PR: " + msgRecieved);
-                            if(messageListMap.containsKey(msgRecieved)){
-                                HashSet<Proposal> proposals = messageListMap.get(msgRecieved);
-                                Proposal newProposal = new Proposal(msgRecieved.recieverId,(int)msgRecieved.sequenceNumber);
-                                proposals.add(newProposal);
-                                messageListMap.put(msgRecieved, proposals);
-                                Log.i(TAG, "PR: " + proposals);
-                                if(messageListMap.get(msgRecieved).size() != REMOTE_PORTS.length){ continue; }
-                                Proposal maxProposal = Collections.max(messageListMap.get(msgRecieved));
+                            HashMap<Integer, Integer> proposals = messageListMap.get(msgRecieved.messageId);
+                            proposals.put(msgRecieved.proposerId, msgRecieved.sequenceNumber);
+                            Log.i(TAG, "PR: " + proposals);
+                            if(proposals.size() == REMOTE_PORTS.length) {
+                                int proposerId = 0;
+                                int proposalValue = -1;
+                                for(Map.Entry<Integer, Integer> entry: proposals.entrySet()){
+                                    if(entry.getValue() >= proposalValue){
+                                        proposalValue = entry.getValue();
+                                        proposerId = entry.getKey();
+                                    }
+                                }
                                 messageListMap.remove(msgRecieved);
-                                Message msgToSend = new Message(msgRecieved.message,msgRecieved.senderId,msgRecieved.messageId);
-                                msgToSend.sequenceNumber = maxProposal.proposalValue;
-                                msgToSend.proposerId = maxProposal.proposerId;
+                                Message msgToSend = new Message(msgRecieved.message, msgRecieved.senderId, msgRecieved.messageId);
+                                msgToSend.sequenceNumber = proposalValue;
+                                msgToSend.proposerId = proposerId;
                                 msgToSend.messageType = MessageType.Agreement;
-                                Log.i(TAG,"PR: " + "Agreed Message: " + msgToSend);
-                                multicastMessage(msgToSend);
+                                Log.i(TAG, "PR: " + "Agreed Message: " + msgToSend);
+                                publishProgress(msgToSend);
                             }
                             break;
                         default:
@@ -257,48 +183,53 @@ public class GroupMessengerActivity extends Activity {
                             break;
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Exception in ServerSocket: ", e);
                 }
+
+                Log.i(TAG, "Connection " + i + " closed");
             }
         }
 
-        protected void onProgressUpdate(String...strings) {
-            String strReceived = strings[0].trim();
-            TextView textView = (TextView) findViewById(R.id.textView1);
-            textView.append(strReceived + "\n");
-            return;
+        protected void onProgressUpdate(Message...msgs) {
+            new ClientTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, msgs[0]);
         }
     }
 
     private class ClientTask extends AsyncTask<Message, Void, Void> {
 
         @Override
-        protected synchronized Void doInBackground(Message... msgs) {
-            Log.i(TAG,"multicast msg: " + msgs[0] + " REMOTE PORTS:" +Arrays.toString(REMOTE_PORTS));
-            for(int port:REMOTE_PORTS){
-                try {
-                    Message msg = msgs[0];
-                    msg.recieverId = port;
-                    Socket socket = new Socket(InetAddress.getByAddress(new byte[]{10, 0, 2, 2}), port);
+        protected Void doInBackground(Message... msgs) {
+            try{
+                Message msg = msgs[0];
+                if(msg.messageType == MessageType.Agreement || msg.messageType == MessageType.NewMessage){
+                    for(int port:REMOTE_PORTS){
+                        if(msg.messageType == MessageType.NewMessage){
+                            msg.proposerId = port;
+                        }
+                        Socket socket = new Socket(InetAddress.getByAddress(new byte[]{10, 0, 2, 2}), port);
+                        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                        out.writeObject(msg);
+                        Log.i(TAG, "Client: " + msg + " onport: " + port);
+                        out.flush();
+                        out.close();
+                        socket.close();
+                    }
+                }else if(msg.messageType == MessageType.Proposal) {
+                    Socket socket = new Socket(InetAddress.getByAddress(new byte[]{10, 0, 2, 2}), msg.senderId);
                     ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                     out.writeObject(msg);
+                    Log.i(TAG, "Client:Proposal: " + msg);
                     out.flush();
                     out.close();
                     socket.close();
+                  }
                 }catch(SocketTimeoutException e){
-                    Log.e(TAG, "Socket Timeout Exception");
-                    Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
+                    Log.e(TAG, "Socket Timeout Exception: ", e);
                 }catch (IOException e) {
-                    Log.e(TAG, "Socket IO Exception");
-                    //Log.e(TAG, e.getMessage());
-                    e.printStackTrace();
+                    Log.e(TAG, "Socket IO Exception: ", e);
                 }catch (Exception e){
-                    Log.e(TAG,"Gen exception");
-                    Log.e(TAG,e.getMessage());
-                    e.printStackTrace();
+                    Log.e(TAG, "Gen exception: ", e);
                 }
-            }
             return null;
         }
     }

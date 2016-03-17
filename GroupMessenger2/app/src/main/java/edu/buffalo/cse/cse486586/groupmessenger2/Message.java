@@ -8,12 +8,10 @@ import java.io.Serializable;
 enum MessageType {NewMessage, Proposal, Agreement, Ping, Ack};
 public class Message implements Serializable,Comparable{
 
-    int messageId;
+    final int messageId;
     MessageType messageType;
-    String message;
-    int senderId;
-
-    int recieverId;
+    final String message;
+    final int senderId;
 
     int sequenceNumber;
     int proposerId;
@@ -24,7 +22,6 @@ public class Message implements Serializable,Comparable{
         this.senderId = senderId;
         this.messageId = messageId;
         this.sequenceNumber = -1;
-        this.recieverId = -1;
         this.proposerId = -1;
     }
 
@@ -56,7 +53,6 @@ public class Message implements Serializable,Comparable{
                 ", msg='" + message + '\'' +
                 ", sId=" + senderId +
                 ", mId=" + messageId +
-                ", rId=" + recieverId +
                 ", pId=" + proposerId +
                 ", seqNum=" + sequenceNumber +
                 '}';
@@ -65,7 +61,7 @@ public class Message implements Serializable,Comparable{
     @Override
     public int compareTo(Object o) {
         if(o == null || !(o instanceof Message)){
-            return -1;
+            return 1;
         }
         Message other = (Message) o;
         if(this.sequenceNumber == other.sequenceNumber){
