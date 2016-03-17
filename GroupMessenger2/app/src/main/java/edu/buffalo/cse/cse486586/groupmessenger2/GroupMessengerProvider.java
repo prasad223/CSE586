@@ -1,4 +1,4 @@
-package edu.buffalo.cse.cse486586.groupmessenger1;
+package edu.buffalo.cse.cse486586.groupmessenger2;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -168,6 +168,7 @@ public class GroupMessengerProvider extends ContentProvider {
         queryBuilder.appendWhere(KEY_COLUMN_NAME + " = '" + selection +"'");
         Cursor cursor = queryBuilder.query(db, projection, null, selectionArgs, null, null,sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        //Log.v("query","0: " +cursor.getString(0) +" 1: " +cursor.getString(1));
         return cursor;
     }
 }
