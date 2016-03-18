@@ -223,7 +223,7 @@ public class GroupMessengerActivity extends Activity {
 
         @Override
         protected Void doInBackground(Message... msgs) {
-            try{
+            Log.i(TAG,"ClientTASK: msg: " + msgs[0]);
                 Message msg = msgs[0];
                 switch (msg.messageType){
                     case Agreement:
@@ -247,14 +247,12 @@ public class GroupMessengerActivity extends Activity {
                         Log.i(TAG,"UnhandledMessageType: " + msg);
                         break;
                 }
-                }catch(Exception e){
-                    Log.e(TAG, "Exception: REMOTE: " + REMOTE_PORTS, e);
-                }
             return null;
         }
 
         private void sendMessage(Message msg, int port){
             try{
+                Log.i(TAG,"SendMessage: port: " + port + " msg: " + msg);
                 Socket socket = new  Socket(InetAddress.getByAddress(new byte[]{10, 0, 2, 2}), port);
                 ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                 out.writeObject(msg);
@@ -262,7 +260,7 @@ public class GroupMessengerActivity extends Activity {
                 out.close();
                 socket.close();
             }catch (Exception e){
-                REMOTE_PORTS.remove(new Integer(port));
+                REMOTE_PORTS.remove(port);
                 Log.e(TAG, "This avd is offline: " + port + " new REmote ports: " + REMOTE_PORTS);
                 Log.e(TAG, "Exception: ", e);
                 handleFailure(port);
@@ -279,17 +277,39 @@ public class GroupMessengerActivity extends Activity {
         private void handleFailure(int port){
             updateMyMessages(port);
             updateQueue();
+            checkMyMessagesForDelivery();
         }
 
         private void updateMyMessages(int port){
             for(Map.Entry<Integer,HashMap<Integer, Integer>> entry: messageListMap.entrySet()){
-                    if(entry.getValue().containsKey(port)){
-                        entry.getValue().remove(port);
-                        if(entry.getValue().size() == REMOTE_PORTS.size()){
-                            agreeAndSendMessage(messageMap.get(entry.getKey()),entry.getValue());
+                HashMap<Integer,Integer> proposals = entry.getValue();
+                if(proposals.containsKey(port)){
+                    proposals.remove(port);
+                    if(proposals.size() == REMOTE_PORTS.size()) {
+                        int proposerId = 0;
+                        int proposalValue = -1;
+                        for(Map.Entry<Integer, Integer> entry1: proposals.entrySet()){
+                            if(entry1.getValue() >= proposalValue){
+                                proposalValue = entry1.getValue();
+                                proposerId = entry1.getKey();
+                            }
                         }
+                        Message msg = messageMap.get(entry.getKey());
+                        synchronized (messageListMap){
+                            messageListMap.remove(msg.messageId);
+                        }
+                        synchronized (messageMap){
+                            messageMap.remove(msg.messageId);
+                        }
+                        Message msgToSend = new Message(msg.message, msg.senderId, msg.messageId);
+                        msgToSend.sequenceNumber = proposalValue;
+                        msgToSend.proposerId = proposerId;
+                        msgToSend.messageType = MessageType.Agreement;
+                        Log.i(TAG, "PR: " + "Agreed Message: " + msgToSend);
+                        publishProgress(msgToSend);
                     }
                 }
+            }
         }
 
         private void updateQueue(){
@@ -311,29 +331,9 @@ public class GroupMessengerActivity extends Activity {
             }
         }
 
-        private void agreeAndSendMessage(Message msg, HashMap<Integer, Integer> proposals){
-            if(proposals.size() >= REMOTE_PORTS.size()) {
-                int proposerId = 0;
-                int proposalValue = -1;
-                for(Map.Entry<Integer, Integer> entry: proposals.entrySet()){
-                    if(REMOTE_PORTS.contains(entry.getKey()) && entry.getValue() >= proposalValue){
-                        proposalValue = entry.getValue();
-                        proposerId = entry.getKey();
-                    }
-                }
-                synchronized (messageListMap){
-                    messageListMap.remove(msg.messageId);
-                }
-                synchronized (messageMap){
-                    messageMap.remove(msg.messageId);
-                }
-                Message msgToSend = new Message(msg.message, msg.senderId, msg.messageId);
-                msgToSend.sequenceNumber = proposalValue;
-                msgToSend.proposerId = proposerId;
-                msgToSend.messageType = MessageType.Agreement;
-                Log.i(TAG, "PR: " + "Agreed Message: " + msgToSend);
-                publishProgress(msgToSend);
-            }
+        private void checkMyMessagesForDelivery(){
+
+
         }
 
         @Override
