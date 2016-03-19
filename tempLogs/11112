@@ -1,0 +1,185 @@
+I/ActivityManager( 1240): Start proc edu.buffalo.cse.cse486586.groupmessenger2 for activity edu.buffalo.cse.cse486586.groupmessenger2/.GroupMessengerActivity: pid=16170 uid=10353 gids={50353, 3003}
+I/GMA     (16170):  myport: 11112
+I/ActivityManager( 1240): Displayed edu.buffalo.cse.cse486586.groupmessenger2/.GroupMessengerActivity: +724ms
+I/GMA     (16170): Generated New Message: {mType=NewMessage, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=-1, seqNum=-1}
+I/GMA     (16170): SendMessage: port: 11108 msg: {mType=NewMessage, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11108, seqNum=-1}
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 0, Sending proposal: {mType=Proposal, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11112, seqNum=0}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 1, Sending proposal: {mType=Proposal, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11112, seqNum=1}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11112 msg: {mType=NewMessage, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 2, Sending proposal: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11112, seqNum=2}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 3, Sending proposal: {mType=Proposal, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11112, seqNum=3}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11116 msg: {mType=NewMessage, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11116, seqNum=-1}
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 4, Sending proposal: {mType=Proposal, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=4}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11120 msg: {mType=NewMessage, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11120, seqNum=-1}
+I/GMA     (16170): SERVER: msg rec: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11108, seqNum=2}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): PR: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11108, seqNum=2}PR: {1={11108=2}}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11124 msg: {mType=NewMessage, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=-1}
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11124, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11120, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11108, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11116, seqNum=4}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): PR: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11116, seqNum=4}PR: {1={11116=4, 11108=2}}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11120 msg: {mType=Proposal, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11112, seqNum=0}
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11116, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11108 msg: {mType=Proposal, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11112, seqNum=1}
+I/GMA     (16170): SendMessage: port: 11112 msg: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11112, seqNum=2}
+I/GMA     (16170): SendMessage: port: 11116 msg: {mType=Proposal, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11112, seqNum=3}
+I/GMA     (16170): SERVER: msg rec: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11112, seqNum=2}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): PR: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11112, seqNum=2}PR: {1={11112=2, 11116=4, 11108=2}}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): Generated New Message: {mType=NewMessage, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='R0z4ebdVFhfQHbXtd8x5vCpYpC4I0oIK', sId=11124, mId=2, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 5, Sending proposal: {mType=Proposal, msg='R0z4ebdVFhfQHbXtd8x5vCpYpC4I0oIK', sId=11124, mId=2, pId=11112, seqNum=5}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11120, seqNum=4}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): PR: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11120, seqNum=4}PR: {1={11112=2, 11116=4, 11108=2, 11120=4}, 2={}}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='nAbD9F4KA9VdF0hmMO0EMWQKckhyli8w', sId=11120, mId=2, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 6, Sending proposal: {mType=Proposal, msg='nAbD9F4KA9VdF0hmMO0EMWQKckhyli8w', sId=11120, mId=2, pId=11112, seqNum=6}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11124 msg: {mType=Proposal, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=4}
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='3wto2yy9UYQB6Xx4l9mxFCJEc7C7pv2W', sId=11108, mId=2, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 7, Sending proposal: {mType=Proposal, msg='3wto2yy9UYQB6Xx4l9mxFCJEc7C7pv2W', sId=11108, mId=2, pId=11112, seqNum=7}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='mah3Yu0l43QGQQnSjgQrYGwimm65qAgR', sId=11116, mId=2, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 8, Sending proposal: {mType=Proposal, msg='mah3Yu0l43QGQQnSjgQrYGwimm65qAgR', sId=11116, mId=2, pId=11112, seqNum=8}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11112, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): PR: {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}PR: {1={11112=2, 11120=4, 11116=4, 11108=2, 11124=4}, 2={}}
+I/GMA     (16170): PR:My cur msgs: {2={}} map: {2={mType=NewMessage, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=-1, seqNum=-1}}
+I/GMA     (16170): PR: Agreed Message: {mType=Agreement, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Agreement, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=4}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): AG: curAgreedSeqNum: 4 msgReceived: {mType=Agreement, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=4}
+I/GMA     (16170): AG: curr Q: [{mType=Proposal, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11112, seqNum=0}, {mType=Proposal, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11112, seqNum=1}, {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11112, seqNum=2}, {mType=Proposal, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11112, seqNum=3}, {mType=Proposal, msg='mah3Yu0l43QGQQnSjgQrYGwimm65qAgR', sId=11116, mId=2, pId=11112, seqNum=8}, {mType=Proposal, msg='R0z4ebdVFhfQHbXtd8x5vCpYpC4I0oIK', sId=11124, mId=2, pId=11112, seqNum=5}, {mType=Proposal, msg='nAbD9F4KA9VdF0hmMO0EMWQKckhyli8w', sId=11120, mId=2, pId=11112, seqNum=6}, {mType=Proposal, msg='3wto2yy9UYQB6Xx4l9mxFCJEc7C7pv2W', sId=11108, mId=2, pId=11112, seqNum=7}, {mType=Agreement, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=4}]
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Agreement, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11120, seqNum=3}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): AG: curAgreedSeqNum: 4 msgReceived: {mType=Agreement, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11120, seqNum=3}
+I/GMA     (16170): AG: curr Q: [{mType=Proposal, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11112, seqNum=0}, {mType=Proposal, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11112, seqNum=3}, {mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11112, seqNum=2}, {mType=Agreement, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11120, seqNum=3}, {mType=Proposal, msg='mah3Yu0l43QGQQnSjgQrYGwimm65qAgR', sId=11116, mId=2, pId=11112, seqNum=8}, {mType=Proposal, msg='R0z4ebdVFhfQHbXtd8x5vCpYpC4I0oIK', sId=11124, mId=2, pId=11112, seqNum=5}, {mType=Proposal, msg='nAbD9F4KA9VdF0hmMO0EMWQKckhyli8w', sId=11120, mId=2, pId=11112, seqNum=6}, {mType=Proposal, msg='3wto2yy9UYQB6Xx4l9mxFCJEc7C7pv2W', sId=11108, mId=2, pId=11112, seqNum=7}, {mType=Agreement, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=4}]
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Agreement, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11124, seqNum=2}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): AG: curAgreedSeqNum: 4 msgReceived: {mType=Agreement, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11124, seqNum=2}
+I/GMA     (16170): AG: curr Q: [{mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11112, seqNum=2}, {mType=Agreement, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11124, seqNum=2}, {mType=Agreement, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=4}, {mType=Proposal, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11112, seqNum=3}, {mType=Proposal, msg='mah3Yu0l43QGQQnSjgQrYGwimm65qAgR', sId=11116, mId=2, pId=11112, seqNum=8}, {mType=Proposal, msg='R0z4ebdVFhfQHbXtd8x5vCpYpC4I0oIK', sId=11124, mId=2, pId=11112, seqNum=5}, {mType=Proposal, msg='nAbD9F4KA9VdF0hmMO0EMWQKckhyli8w', sId=11120, mId=2, pId=11112, seqNum=6}, {mType=Proposal, msg='3wto2yy9UYQB6Xx4l9mxFCJEc7C7pv2W', sId=11108, mId=2, pId=11112, seqNum=7}, {mType=Agreement, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11120, seqNum=3}]
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Agreement, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11124, seqNum=3}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): AG: curAgreedSeqNum: 4 msgReceived: {mType=Agreement, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11124, seqNum=3}
+I/GMA     (16170): AG: curr Q: [{mType=Proposal, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11112, seqNum=2}, {mType=Agreement, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11124, seqNum=2}, {mType=Agreement, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=4}, {mType=Agreement, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11120, seqNum=3}, {mType=Proposal, msg='mah3Yu0l43QGQQnSjgQrYGwimm65qAgR', sId=11116, mId=2, pId=11112, seqNum=8}, {mType=Proposal, msg='R0z4ebdVFhfQHbXtd8x5vCpYpC4I0oIK', sId=11124, mId=2, pId=11112, seqNum=5}, {mType=Proposal, msg='nAbD9F4KA9VdF0hmMO0EMWQKckhyli8w', sId=11120, mId=2, pId=11112, seqNum=6}, {mType=Proposal, msg='3wto2yy9UYQB6Xx4l9mxFCJEc7C7pv2W', sId=11108, mId=2, pId=11112, seqNum=7}, {mType=Agreement, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11124, seqNum=3}]
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11108 msg: {mType=NewMessage, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11108, seqNum=-1}
+I/GMA     (16170): SendMessage: port: 11112 msg: {mType=NewMessage, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11112, seqNum=-1}
+I/GMA     (16170): SendMessage: port: 11116 msg: {mType=NewMessage, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11116, seqNum=-1}
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 9, Sending proposal: {mType=Proposal, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11112, seqNum=9}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11120 msg: {mType=NewMessage, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11120, seqNum=-1}
+I/GMA     (16170): Generated New Message: {mType=NewMessage, msg='oco5Eh0EUM1mtcWAXNNIpxSylrHiT9cf', sId=11112, mId=3, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11116, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11120, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11108, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='grckiYPCfZIIzp0uCprY2MCBIFWegju6', sId=11116, mId=3, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 10, Sending proposal: {mType=Proposal, msg='grckiYPCfZIIzp0uCprY2MCBIFWegju6', sId=11116, mId=3, pId=11112, seqNum=10}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11124, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='dzIKOPbl54vt6HPPVDR6Bie8g2kwQt54', sId=11108, mId=3, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 11, Sending proposal: {mType=Proposal, msg='dzIKOPbl54vt6HPPVDR6Bie8g2kwQt54', sId=11108, mId=3, pId=11112, seqNum=11}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11124 msg: {mType=NewMessage, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11124, seqNum=-1}
+I/GMA     (16170): SendMessage: port: 11124 msg: {mType=Proposal, msg='R0z4ebdVFhfQHbXtd8x5vCpYpC4I0oIK', sId=11124, mId=2, pId=11112, seqNum=5}
+I/GMA     (16170): SERVER: msg rec: {mType=Proposal, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11116, seqNum=9}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): PR: {mType=Proposal, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11116, seqNum=9}PR: {2={11116=9}, 3={}}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11120 msg: {mType=Proposal, msg='nAbD9F4KA9VdF0hmMO0EMWQKckhyli8w', sId=11120, mId=2, pId=11112, seqNum=6}
+I/GMA     (16170): SendMessage: port: 11108 msg: {mType=Proposal, msg='3wto2yy9UYQB6Xx4l9mxFCJEc7C7pv2W', sId=11108, mId=2, pId=11112, seqNum=7}
+I/GMA     (16170): SendMessage: port: 11116 msg: {mType=Proposal, msg='mah3Yu0l43QGQQnSjgQrYGwimm65qAgR', sId=11116, mId=2, pId=11112, seqNum=8}
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11116, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11108 msg: {mType=Agreement, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}
+I/GMA     (16170): SERVER: msg rec: {mType=NewMessage, msg='ZGxHIhFSwAnTDxvhrn4D5O3BkmF9M1tS', sId=11124, mId=3, pId=11112, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): NM: pSeqNum: 12, Sending proposal: {mType=Proposal, msg='ZGxHIhFSwAnTDxvhrn4D5O3BkmF9M1tS', sId=11124, mId=3, pId=11112, seqNum=12}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SERVER: msg rec: {mType=Proposal, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11108, seqNum=9}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): PR: {mType=Proposal, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11108, seqNum=9}PR: {2={11108=9, 11116=9}, 3={}}
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): Generated New Message: {mType=NewMessage, msg='RaHNJQfj83WzwWAipzcyMn59eah3Ddn9', sId=11112, mId=4, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: msg rec: {mType=Ping, msg='ping', sId=-1, mId=11108, pId=-1, seqNum=-1}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11112 msg: {mType=Agreement, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}
+I/GMA     (16170): SendMessage: port: 11116 msg: {mType=Agreement, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}
+I/GMA     (16170): SERVER: msg rec: {mType=Agreement, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}
+I/GMA     (16170): SERVER: Acquired Lock
+I/GMA     (16170): AG: curAgreedSeqNum: 4 msgReceived: {mType=Agreement, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}
+I/GMA     (16170): AG: curr Q: [{mType=Agreement, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11124, seqNum=2}, {mType=Agreement, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11120, seqNum=3}, {mType=Agreement, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=4}, {mType=Agreement, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11124, seqNum=3}, {mType=Proposal, msg='mah3Yu0l43QGQQnSjgQrYGwimm65qAgR', sId=11116, mId=2, pId=11112, seqNum=8}, {mType=Agreement, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}, {mType=Proposal, msg='nAbD9F4KA9VdF0hmMO0EMWQKckhyli8w', sId=11120, mId=2, pId=11112, seqNum=6}, {mType=Proposal, msg='3wto2yy9UYQB6Xx4l9mxFCJEc7C7pv2W', sId=11108, mId=2, pId=11112, seqNum=7}, {mType=Proposal, msg='ZGxHIhFSwAnTDxvhrn4D5O3BkmF9M1tS', sId=11124, mId=3, pId=11112, seqNum=12}, {mType=Proposal, msg='Z6DysY2iRET83SGLjydT0UFZbTvAKich', sId=11112, mId=2, pId=11112, seqNum=9}, {mType=Proposal, msg='grckiYPCfZIIzp0uCprY2MCBIFWegju6', sId=11116, mId=3, pId=11112, seqNum=10}, {mType=Proposal, msg='dzIKOPbl54vt6HPPVDR6Bie8g2kwQt54', sId=11108, mId=3, pId=11112, seqNum=11}, {mType=Proposal, msg='R0z4ebdVFhfQHbXtd8x5vCpYpC4I0oIK', sId=11124, mId=2, pId=11112, seqNum=5}]
+I/GMA     (16170): AG: Deliverable msg on Q: {mType=Agreement, msg='29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG', sId=11120, mId=1, pId=11124, seqNum=2}
+I/GMA     (16170): AG: Inserting : value=29JhM4N4AvO7W4Po2poFnSFwbmGgAFYG key=0
+I/GMA     (16170): AG: Deliverable msg on Q: {mType=Agreement, msg='jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU', sId=11108, mId=1, pId=11120, seqNum=3}
+I/GMA     (16170): AG: Inserting : value=jbQAOPioBay8w8X1GVE1q4SK1AJuQ7KU key=1
+I/GMA     (16170): AG: Deliverable msg on Q: {mType=Agreement, msg='7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw', sId=11116, mId=1, pId=11124, seqNum=3}
+I/GMA     (16170): AG: Inserting : value=7mL6aYGZaKXNdvFwnjAhC6zQlpZMtZkw key=2
+I/GMA     (16170): AG: Deliverable msg on Q: {mType=Agreement, msg='df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz', sId=11124, mId=1, pId=11112, seqNum=4}
+I/GMA     (16170): AG: Inserting : value=df8XRttwEBrNw6sWZ6pvc2hX0KOosBxz key=3
+I/GMA     (16170): AG: Deliverable msg on Q: {mType=Agreement, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}
+I/GMA     (16170): AG: Inserting : value=9guEkJTUWq672fpwF6afeMCLZloQqS3y key=4
+I/GMA     (16170): SERVER: Released Lock
+I/GMA     (16170): SendMessage: port: 11120 msg: {mType=Agreement, msg='9guEkJTUWq672fpwF6afeMCLZloQqS3y', sId=11112, mId=1, pId=11124, seqNum=4}
+I/ActivityManager( 1240): Force stopping edu.buffalo.cse.cse486586.groupmessenger2 appid=10353 user=0: from pid 16593
+I/ActivityManager( 1240): Killing 16170:edu.buffalo.cse.cse486586.groupmessenger2/u0a353 (adj 0): stop edu.buffalo.cse.cse486586.groupmessenger2
+W/ActivityManager( 1240): Force removing ActivityRecord{b3faf0e8 u0 edu.buffalo.cse.cse486586.groupmessenger2/.GroupMessengerActivity t55}: app died, no saved state
+I/WindowState( 1240): WIN DEATH: Window{b42d9d28 u0 edu.buffalo.cse.cse486586.groupmessenger2/edu.buffalo.cse.cse486586.groupmessenger2.GroupMessengerActivity}
+I/ActivityManager( 1240): Start proc edu.buffalo.cse.cse486586.groupmessenger2 for content provider edu.buffalo.cse.cse486586.groupmessenger2/.GroupMessengerProvider: pid=16633 uid=10353 gids={50353, 3003}
