@@ -56,9 +56,8 @@ public class GroupMessengerActivity extends Activity {
     int currentAgreedSequenceNumber = -1;
     static PriorityBlockingQueue<Message> priorityBlockingQueue = new PriorityBlockingQueue<Message>();
     static AtomicInteger messageIdCounter = new AtomicInteger(0);
-    Lock failureHandleLock = new ReentrantLock();
-    boolean startPing = false;
-    Thread failureDetector = new FailureDetector();
+    Lock failureHandleLock = new ReentrantLock(true);
+    volatile boolean startPing = false;
 
     /**
      * buildUri() demonstrates how to build a URI for a ContentProvider.
@@ -105,19 +104,30 @@ public class GroupMessengerActivity extends Activity {
                 String msg = editText.getText().toString();// + "\n";
                 editText.setText("");
                 Message message = new Message(msg, myPort, messageIdCounter.incrementAndGet());
-                messageListMap.put(message.messageId, new HashMap<Integer, Integer>());
-                messageMap.put(message.messageId, message);
-                Log.i(TAG, "Generated New Message: " + message);
-                new ClientTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, message);
-                if(!startPing){
-                    startPing = true;
-                    startDetector();
+                try{
+                    failureHandleLock.lock();
+                    messageListMap.put(message.messageId, new HashMap<Integer, Integer>());
+                    messageMap.put(message.messageId, message);
+                    Log.i(TAG, "Generated New Message: " + message);
+                }finally{
+                    failureHandleLock.unlock();
                 }
+                new ClientTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, message);
+                startDetector();
             }
         });
     }
 
-    private void startDetector(){ failureDetector.start(); }
+    private synchronized void startDetector()
+    {
+        if(startPing)
+        {
+            return;
+        }
+
+        new FailureDetector().start();
+        startPing = true;
+    }
 
     private class FailureDetector extends Thread{
         @Override
@@ -126,7 +136,7 @@ public class GroupMessengerActivity extends Activity {
             while(REMOTE_PORTS.size() != 4){
                 try {
                     Thread.sleep(3000);
-                    Message msg = new Message("ping",-1,myPort);
+                    Message msg = new Message("ping",myPort,-1);
                     msg.messageType = MessageType.Ping;
                     new ClientTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, msg);
                 } catch (InterruptedException e) {
@@ -150,13 +160,9 @@ public class GroupMessengerActivity extends Activity {
                     Socket socket =  serverSocket.accept();
                     failureHandleLock.lock();
                     Log.i(TAG, "SERVER: Acquired Lock");
-                    if(!startPing){
-                        Log.i(TAG,"SERVER:Starting failure detector on first message");
-                        startPing = true;
-                        Message ping = new Message("ping",-1,-1);
-                        ping.messageType = MessageType.Ping;
-                        publishProgress(ping);
-                    }
+
+                    startDetector();
+
                     ObjectInputStream input  = new ObjectInputStream(socket.getInputStream());
                     Message msgRecieved = (Message) input.readObject();
 
@@ -182,10 +188,17 @@ public class GroupMessengerActivity extends Activity {
                             currentAgreedSequenceNumber = Math.max(currentAgreedSequenceNumber,msgRecieved.sequenceNumber);
                             Log.i(TAG,"AG: curAgreedSeqNum: " + currentAgreedSequenceNumber+ " msgReceived: " + msgRecieved);
                             Log.i(TAG,"AG: " + "curr Q: " + priorityBlockingQueue);
-                            while(!priorityBlockingQueue.isEmpty() && priorityBlockingQueue.peek().messageType == MessageType.Agreement){
-                                Log.i(TAG,"AG: " +"Deliverable msg on Q: " + priorityBlockingQueue.peek());
+                            while(!priorityBlockingQueue.isEmpty())
+                            {
+                                Message m =  priorityBlockingQueue.peek();
+                                if(m.messageType != MessageType.Agreement)
+                                    break;
+
+                                priorityBlockingQueue.poll();
+
+                                Log.i(TAG,"AG: " +"Deliverable msg on Q: " + m);
                                 contentValues.put(KEY_FIELD, String.valueOf(messageCounter.getAndIncrement()));
-                                contentValues.put(VALUE_FIELD, priorityBlockingQueue.poll().message);
+                                contentValues.put(VALUE_FIELD, m.message);
                                 Log.i(TAG,"AG: " + "Inserting : " + contentValues);
                                 getContentResolver().insert(uri,contentValues);
                             }
@@ -231,11 +244,7 @@ public class GroupMessengerActivity extends Activity {
         }
 
         protected void onProgressUpdate(Message...msgs) {
-            if(msgs[0].messageType == MessageType.Ping){
-                startDetector();
-            }else {
-                new ClientTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, msgs[0]);
-            }
+            new ClientTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, msgs[0]);
         }
     }
 
@@ -310,6 +319,7 @@ public class GroupMessengerActivity extends Activity {
                     REMOTE_PORTS.remove(new Integer(port));
                     Log.e(TAG, "HF:if: This avd is offline: " + port + " new REmote ports: " + REMOTE_PORTS);
                 }
+
                 updateQueue(port);
                 updateMyMessages(port);
                 checkMyMsgForDelivery();
