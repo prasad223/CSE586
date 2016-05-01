@@ -15,7 +15,7 @@ enum MessageType{
     Sync,       SyncResponse
    }
 
-public class Message implements Serializable, Comparable {
+public class Message implements Serializable {
 
     final int messageId;
     MessageType mType;
@@ -48,26 +48,9 @@ public class Message implements Serializable, Comparable {
                 ", Ty=" + mType +
                 ", sId='" + senderId + '\'' +
                 ", rId='" + receiverId + '\'' +
+                ", rqId='" + requestId + '\'' +
                 ", data=" + data +
                 '}';
-    }
-
-    @Override
-    public int compareTo(Object another) {
-        if(another == null || !(another instanceof Message)){
-            return -1;
-        }
-        switch (this.mType){
-            case Sync:
-            case SyncResponse:
-                return -1;
-        }
-        switch (((Message)another).mType){
-            case Sync:
-            case SyncResponse:
-                return 1;
-        }
-        return Integer.compare(this.requestId, ((Message)another).requestId);
     }
 }
 

@@ -21,8 +21,8 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -66,10 +67,10 @@ public class SimpleDynamoProvider extends ContentProvider {
 	Lock dbLock = new ReentrantLock();
 
 	AtomicInteger requestIdGenerator = new AtomicInteger(0);
-	PriorityBlockingQueue<Message> requestQueue  = new PriorityBlockingQueue<Message>();
-	PriorityBlockingQueue<Message> messageOutQueue = new PriorityBlockingQueue<Message>();
+	PriorityBlockingQueue<Message> requestQueue  = new PriorityBlockingQueue<Message>(100,new MessageComparator());
+	ConcurrentLinkedQueue<Message> messageOutQueue = new ConcurrentLinkedQueue<Message>();
 	ConcurrentMap<Integer, CountDownLatch> operationsTimers = new ConcurrentHashMap<Integer, CountDownLatch>();
-	ConcurrentMap<Integer, List<Message>> requestResponses = new ConcurrentHashMap<Integer, List<Message>>();
+	ConcurrentMap<Integer, ConcurrentLinkedQueue<Message>> requestResponses = new ConcurrentHashMap<Integer, ConcurrentLinkedQueue<Message>>();
 	boolean isSyncDone 	= false;
 
 	private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -154,6 +155,31 @@ public class SimpleDynamoProvider extends ContentProvider {
 		}
 	}
 
+	private class MessageComparator implements Comparator<Message>{
+		@Override
+		public int compare(Message lhs, Message rhs) {
+			if(!isSyncDone){
+				if(rhs == null){
+					return -1;
+				}
+				if(lhs == null){
+					return 1;
+				}
+				switch (lhs.mType){
+					case Sync:
+					case SyncResponse:
+						return -1;
+				}
+				switch (rhs.mType){
+					case Sync:
+					case SyncResponse:
+						return 1;
+				}
+			}
+			return Integer.compare(lhs.requestId, rhs.requestId);
+		}
+	}
+
 	private void performSyncOperation(){
 		List<String> myNodes = getNodesForPort(myPort);
 		Message msg = new Message(messageIDGenerator.incrementAndGet(),myPort,MessageType.Sync);
@@ -177,18 +203,25 @@ public class SimpleDynamoProvider extends ContentProvider {
 
 		Map<String, String> keyValues = new HashMap<String, String>();
 		Map<String, Integer> keyVersions = new HashMap<String, Integer>();
-		List<Message> messages = requestResponses.get(msg.messageId);
+		ConcurrentLinkedQueue<Message> messages = requestResponses.get(msg.messageId);
+		Log.i(TAG,"[Sync]:Before: responses: " + messages.size() + " , rr: " + requestResponses.get(msg.messageId).size());
 		for(Message message : messages) {
 			if (message == null || message.data == null || !(message.data instanceof Set)) {
 				continue;
 			}
 			Set<Row> data = (Set<Row>) message.data;
 			for (Row row: data) {
-				keyVersions.put(row.key, row.version);
-				keyValues.put(row.key, row.value);
+				if(!keyVersions.containsKey(row.key)){
+					keyVersions.put(row.key, row.version);
+					keyValues.put(row.key, row.value);
+				}
+				if(keyVersions.get(row.key) < row.version){
+					keyVersions.put(row.key, row.version);
+					keyValues.put(row.key, row.value);
+				}
 			}
 		}
-		Log.i(TAG,"[Sync]: responses: " + messages.size() + " , rr: " + requestResponses.get(msg.messageId).size());
+		Log.i(TAG,"[Sync]:After: responses: " + messages.size() + " , rr: " + requestResponses.get(msg.messageId).size());
 		operationsTimers.remove(msg.messageId);
 		requestResponses.remove(msg.messageId);
 		ContentValues values = new ContentValues();
@@ -219,24 +252,20 @@ public class SimpleDynamoProvider extends ContentProvider {
 		@Override
 		public void run() {
 			while (true){
-				if(!isSyncDone && !requestQueue.isEmpty() && !(requestQueue.peek().mType == MessageType.Sync || requestQueue.peek().mType == MessageType.SyncResponse)){
-					continue;
-				}else{
-					final Message message;
-					try{
-						message = requestQueue.take();
-					}catch (Exception e){
-						Log.e(TAG,this.getClass().getSimpleName()+":Ex: " ,e);
-						continue;
+				while(!isSyncDone){
+					if(!requestQueue.isEmpty() && (requestQueue.peek().mType == MessageType.Sync || requestQueue.peek().mType == MessageType.SyncResponse)){
+						handleMessage(requestQueue.poll());
 					}
-					handleMessage(message);
+				}
+				if(!requestQueue.isEmpty()){
+					handleMessage(requestQueue.poll());
 				}
 			}
 		}
 	}
 
 	private void handleMessage(Message message){
-		Log.i(TAG,"[HandleMessage]: " + message);
+		//Log.i(TAG,"[HandleMessage]: " + message);
 		if(message == null){
 			return;
 		}
@@ -380,7 +409,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 			row.value = cursor.getString(vIndex);
 			row.version = cursor.getInt(rIndex);
 			if(nodesForPort.contains(cursor.getString(nIndex))){
-				Log.i(TAG,"[Sync]:H:Row: " + row);
+				//Log.i(TAG,"[Sync]:H:Row: " + row);
 				data.add(row);
 			}
 		}
@@ -397,7 +426,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 			while (true){
 				try {
 					while (!messageOutQueue.isEmpty()) {
-						final Message msg = messageOutQueue.take();
+						final Message msg = messageOutQueue.poll();
 						Log.i(TAG,"[MSend]: "+ msg);
 						if(myPort.equals(msg.receiverId)){
 							msg.requestId = requestIdGenerator.incrementAndGet();
@@ -488,7 +517,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 
 	private synchronized void addMessagesToOutQueue(Message msg, String[] outPorts){
 		operationsTimers.put(msg.messageId, new CountDownLatch(outPorts.length - 1));
-		requestResponses.put(msg.messageId, new ArrayList<Message>());
+		requestResponses.put(msg.messageId, new ConcurrentLinkedQueue<Message>());
 		for(String port: outPorts){
 			Message m1 = new Message(msg);
 			m1.receiverId = port;
@@ -713,7 +742,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 					Socket socket =  serverSocket.accept();
 					ObjectInputStream input  = new ObjectInputStream(socket.getInputStream());
 					Message msgReceived = (Message) input.readObject();
-					Log.i(TAG,"[SERVER]: " + msgReceived);
+					//Log.i(TAG,"[SERVER]: " + msgReceived);
 					msgReceived.requestId = requestIdGenerator.incrementAndGet();
 					requestQueue.add(msgReceived);
 					input.close();
