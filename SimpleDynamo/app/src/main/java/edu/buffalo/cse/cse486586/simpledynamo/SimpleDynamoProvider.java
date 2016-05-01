@@ -309,7 +309,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 		int count = localQuery(row.key).getCount();
 		Log.i(TAG,"[Delete]:H:count: " + count +" ,msg:" + message );
 		message.data = count;
-		localInsert(row.key, null, getHashNodeForHash(genHash(row.key)));
+		localInsert(row.key, null, nodes.get(getHashNodeForHash(genHash(row.key))));
 		message.receiverId = message.senderId;
 		message.mType = MessageType.DeleteResponse;
 		Log.i(TAG,"[Delete]:H: " + message);
@@ -529,8 +529,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 		try{
 			dbLock.lock();
 			Cursor cursor = localQuery(key);
-			Set<Row> rows = extractRowsFromCursor(cursor);
-			if(rows.size() > 0 ){
+			if(cursor.getCount() > 0 ){
 				cursor.moveToFirst();
 				int version = cursor.getInt(cursor.getColumnIndex(VERSION_COLUMN_NAME));
 				values.put(VERSION_COLUMN_NAME,version+1);

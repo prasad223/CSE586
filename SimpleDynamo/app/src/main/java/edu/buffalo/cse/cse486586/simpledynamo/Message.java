@@ -53,17 +53,17 @@ public class Message implements Serializable, Comparable {
     @Override
     public int compareTo(Object another) {
         if(another == null || !(another instanceof Message)){
-            return 1;
+            return -1;
         }
         switch (this.mType){
             case Sync:
             case SyncResponse:
-                return 1;
+                return -1;
         }
         switch (((Message)another).mType){
             case Sync:
             case SyncResponse:
-                return -1;
+                return 1;
         }
         return 0;
     }
