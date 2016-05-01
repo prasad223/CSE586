@@ -4,7 +4,6 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -65,8 +64,8 @@ public class SimpleDynamoProvider extends ContentProvider {
 	TreeMap<String, String> nodes = new TreeMap<String, String>();
 	AtomicInteger messageIDGenerator = new AtomicInteger();
 	Lock dbLock = new ReentrantLock();
-	//ExecutorService executorService = Executors.newFixedThreadPool(16);
 
+	AtomicInteger requestIdGenerator = new AtomicInteger(0);
 	PriorityBlockingQueue<Message> requestQueue  = new PriorityBlockingQueue<Message>();
 	PriorityBlockingQueue<Message> messageOutQueue = new PriorityBlockingQueue<Message>();
 	ConcurrentMap<Integer, CountDownLatch> operationsTimers = new ConcurrentHashMap<Integer, CountDownLatch>();
@@ -401,6 +400,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 						final Message msg = messageOutQueue.take();
 						Log.i(TAG,"[MSend]: "+ msg);
 						if(myPort.equals(msg.receiverId)){
+							msg.requestId = requestIdGenerator.incrementAndGet();
 							requestQueue.add(msg);
 						}else{
 							sendMessage(msg);
@@ -714,6 +714,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 					ObjectInputStream input  = new ObjectInputStream(socket.getInputStream());
 					Message msgReceived = (Message) input.readObject();
 					Log.i(TAG,"[SERVER]: " + msgReceived);
+					msgReceived.requestId = requestIdGenerator.incrementAndGet();
 					requestQueue.add(msgReceived);
 					input.close();
 					socket.close();

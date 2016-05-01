@@ -22,6 +22,7 @@ public class Message implements Serializable, Comparable {
     final String senderId;
     String receiverId;
     Object data;
+    int requestId;
 
     Message(int messageId, String senderId, MessageType mType){
         this.messageId = messageId;
@@ -29,6 +30,7 @@ public class Message implements Serializable, Comparable {
         this.mType = mType;
         this.receiverId = null;
         this.data = null;
+        this.requestId = Integer.MAX_VALUE;
     }
 
     public Message(Message message) {
@@ -65,7 +67,7 @@ public class Message implements Serializable, Comparable {
             case SyncResponse:
                 return 1;
         }
-        return 0;
+        return Integer.compare(this.requestId, ((Message)another).requestId);
     }
 }
 
