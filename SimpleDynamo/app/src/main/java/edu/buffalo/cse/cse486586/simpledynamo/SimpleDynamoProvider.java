@@ -21,8 +21,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -167,7 +169,9 @@ public class SimpleDynamoProvider extends ContentProvider {
 		Log.i(TAG,"[Sync]: " + Arrays.toString(outPorts) + " ,msg: " + msg);
 		addMessagesToOutQueue(msg, outPorts);
 		try {
+			Log.i(TAG, String.format("[Sync]:Wait:Start: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date())));
 			operationsTimers.get(msg.messageId).await(3000,TimeUnit.MILLISECONDS);
+			Log.i(TAG, String.format("[Sync]:Wait:Done: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date())));
 		} catch (InterruptedException e) {
 			Log.e(TAG,"[Sync]:Ex: ", e);
 		}
