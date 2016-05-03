@@ -19,7 +19,7 @@ public class Message implements Serializable {
 
     final int messageId;
     MessageType mType;
-    final String senderId;
+    String senderId;
     String receiverId;
     Object data;
     int requestId;

@@ -204,7 +204,9 @@ public class SimpleDynamoProvider extends ContentProvider {
 		Map<String, String> keyValues = new HashMap<String, String>();
 		Map<String, Integer> keyVersions = new HashMap<String, Integer>();
 		ConcurrentLinkedQueue<Message> messages = requestResponses.get(msg.messageId);
-		Log.i(TAG,"[Sync]:Before: responses: " + messages.size() + " , rr: " + requestResponses.get(msg.messageId).size());
+		operationsTimers.remove(msg.messageId);
+		requestResponses.remove(msg.messageId);
+		Log.i(TAG,"[Sync]:Before: responses: " + messages.size());
 		for(Message message : messages) {
 			if (message == null || message.data == null || !(message.data instanceof Set)) {
 				continue;
@@ -214,16 +216,26 @@ public class SimpleDynamoProvider extends ContentProvider {
 				if(!keyVersions.containsKey(row.key)){
 					keyVersions.put(row.key, row.version);
 					keyValues.put(row.key, row.value);
+				}else{
+					if(keyVersions.get(row.key) < row.version){
+						keyVersions.put(row.key, row.version);
+						keyValues.put(row.key, row.value);
+					}
 				}
+			}
+		}
+		Log.i(TAG,"[Sync]:KeyVersions: " + keyVersions);
+		Log.i(TAG,"[Sync]:KeyValues: " + keyValues);
+		Set<Row> rows = extractRowsFromCursor(localQueryAll());
+		for(Row row: rows){
+			Log.i(TAG,"[Sync]:Local:Rows: " + row);
+			if(keyVersions.containsKey(row.key)){
 				if(keyVersions.get(row.key) < row.version){
 					keyVersions.put(row.key, row.version);
 					keyValues.put(row.key, row.value);
 				}
 			}
 		}
-		Log.i(TAG,"[Sync]:After: responses: " + messages.size() + " , rr: " + requestResponses.get(msg.messageId).size());
-		operationsTimers.remove(msg.messageId);
-		requestResponses.remove(msg.messageId);
 		ContentValues values = new ContentValues();
 		try{
 			dbLock.lock();
@@ -304,6 +316,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 		Cursor cursor = localQueryAll();
 		message.data = extractRowsFromCursor(cursor);
 		message.receiverId = message.senderId;
+		message.senderId = myPort;
 		message.mType = MessageType.AllQueryResponse;
 		Log.i(TAG,"[Query]:H " + message);
 		messageOutQueue.add(message);
@@ -315,6 +328,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 		String key = row.key;
 		String value = row.value;
 		message.receiverId = message.senderId;
+		message.senderId = myPort;
 		message.mType  = MessageType.InsertResponse;
 		long rowId = localInsert(key,value, nodes.get(getHashNodeForHash(genHash(key))));
 		message.data = rowId;
@@ -339,6 +353,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 		message.data = count;
 		localInsert(row.key, null, nodes.get(getHashNodeForHash(genHash(row.key))));
 		message.receiverId = message.senderId;
+		message.senderId = myPort;
 		message.mType = MessageType.DeleteResponse;
 		Log.i(TAG,"[Delete]:H: " + message);
 		messageOutQueue.add(message);
@@ -356,6 +371,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 		}
 		message.mType = MessageType.QueryResponse;
 		message.receiverId = message.senderId;
+		message.senderId = myPort;
 		Log.i(TAG,"[Query]:H:Done " + message);
 		messageOutQueue.add(message);
 	}
@@ -409,12 +425,12 @@ public class SimpleDynamoProvider extends ContentProvider {
 			row.value = cursor.getString(vIndex);
 			row.version = cursor.getInt(rIndex);
 			if(nodesForPort.contains(cursor.getString(nIndex))){
-				//Log.i(TAG,"[Sync]:H:Row: " + row);
 				data.add(row);
 			}
 		}
 		message.data = data;
 		message.receiverId = message.senderId;
+		message.senderId = myPort;
 		message.mType = MessageType.SyncResponse;
 		Log.i(TAG,"[Sync]:H:Response: " + data);
 		messageOutQueue.add(message);
@@ -452,10 +468,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 				out.close();
 				socket.close();
 			}catch (Exception e){
-//				if(msg.mType == MessageType.Sync){
-//					operationsTimers.get(msg.messageId).countDown();
-//				}
-				Log.e(TAG, "[MSend]:Exception " + msg + " , " + e.getMessage());
+				Log.e(TAG, "[MSend]:Send:Exception " + msg, e);
 			}
 		}
 	}
