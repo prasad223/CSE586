@@ -65,6 +65,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 	TreeMap<String, String> nodes = new TreeMap<String, String>();
 	AtomicInteger messageIDGenerator = new AtomicInteger();
 	Lock dbLock = new ReentrantLock();
+	SimpleDateFormat sm =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	AtomicInteger requestIdGenerator = new AtomicInteger(0);
 	PriorityBlockingQueue<Message> requestQueue  = new PriorityBlockingQueue<Message>(100,new MessageComparator());
@@ -194,9 +195,9 @@ public class SimpleDynamoProvider extends ContentProvider {
 		Log.i(TAG,"[Sync]: " + Arrays.toString(outPorts) + " ,msg: " + msg);
 		addMessagesToOutQueue(msg, outPorts);
 		try {
-			Log.i(TAG, String.format("[Sync]:Wait:Start: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date())));
-			operationsTimers.get(msg.messageId).await(3000,TimeUnit.MILLISECONDS);
-			Log.i(TAG, String.format("[Sync]:Wait:Done: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date())));
+			Log.i(TAG, String.format("[Sync]:Wait:Start: " + sm.format(new Date())));
+			operationsTimers.get(msg.messageId).await(4000,TimeUnit.MILLISECONDS);
+			Log.i(TAG, String.format("[Sync]:Wait:Done: " + sm.format(new Date())));
 		} catch (InterruptedException e) {
 			Log.e(TAG,"[Sync]:Ex: ", e);
 		}
@@ -206,7 +207,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 		ConcurrentLinkedQueue<Message> messages = requestResponses.get(msg.messageId);
 		operationsTimers.remove(msg.messageId);
 		requestResponses.remove(msg.messageId);
-		Log.i(TAG,"[Sync]:Before: responses: " + messages.size());
+		Log.i(TAG,"[Sync]:Before: responses: " + messages.size() +" ,time :" + sm.format(new Date()));
 		for(Message message : messages) {
 			if (message == null || message.data == null || !(message.data instanceof Set)) {
 				continue;
@@ -256,7 +257,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 			dbLock.unlock();
 		}
 		isSyncDone = true;
-		Log.i(TAG,"[Sync]:Done");
+		Log.i(TAG,"[Sync]:Done : " + sm.format(new Date()));
 	}
 
 	private class RequestHandler extends Thread{
@@ -337,7 +338,7 @@ public class SimpleDynamoProvider extends ContentProvider {
 	}
 
 	private void handleResponse(Message message){
-		Log.i(TAG,"[Response]:H: " + message);
+		Log.i(TAG,"[Response]:H:time: " + sm.format(new Date()) + " ,msg: " + message);
 		if(requestResponses.containsKey(message.messageId)){
 			requestResponses.get(message.messageId).add(message);
 		}
